@@ -11,7 +11,20 @@ class GoMapApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Go Map',
-      theme: ThemeData.light(),
+      theme: ThemeData(
+        brightness: Brightness.light,
+        fontFamily: 'SF Pro', // O usa tu fuente si tienes una
+        useMaterial3: true,
+        colorSchemeSeed: const Color.fromARGB(255, 19, 18, 18),
+        inputDecorationTheme: const InputDecorationTheme(
+          border: OutlineInputBorder(
+            borderSide: BorderSide.none,
+            borderRadius: BorderRadius.all(Radius.circular(12)),
+          ),
+          filled: true,
+          fillColor: Color(0xFFF2F2F7),
+        ),
+      ),
       darkTheme: ThemeData.dark(),
       themeMode: ThemeMode.system,
       debugShowCheckedModeBanner: false,
@@ -30,144 +43,179 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   bool rememberMe = false;
   bool passwordVisible = false;
+  bool isSpanish = false;
 
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
+
+  String t(String en, String es) => isSpanish ? es : en;
 
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
-      body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: isDark
-                ? [Colors.black87, Colors.black]
-                : [const Color.fromARGB(255, 0, 0, 0), const Color.fromARGB(255, 253, 252, 252)],
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-          ),
-        ),
-        padding: const EdgeInsets.symmetric(horizontal: 24.0),
+      backgroundColor: isDark ? Colors.black : Colors.white,
+      body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
-            child: Card(
-              elevation: 10,
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(25)),
-              child: Padding(
-                padding: const EdgeInsets.all(24.0),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
+            padding: const EdgeInsets.symmetric(horizontal: 24.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Botón de idioma
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: TextButton(
+                    onPressed: () {
+                      setState(() {
+                        isSpanish = !isSpanish;
+                      });
+                    },
+                    child: Text(
+                      isSpanish ? "English" : "Español",
+                      style: TextStyle(
+                        color: Colors.grey.shade700,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                const Icon(Icons.location_pin, size: 60, color: Colors.black87),
+                const SizedBox(height: 8),
+                const Text(
+                  'GO MAP',
+                  style: TextStyle(
+                    fontSize: 28,
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 1.2,
+                  ),
+                ),
+                const SizedBox(height: 24),
+                Text(
+                  t(
+                    'Welcome\nPlease login with your information',
+                    'Bienvenido\nPor favor inicia sesión con tus datos',
+                  ),
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontSize: 16, color: Colors.grey.shade600),
+                ),
+                const SizedBox(height: 24),
+                TextField(
+                  controller: emailController,
+                  decoration: InputDecoration(
+                    labelText: t('Email address', 'Correo electrónico'),
+                    prefixIcon: const Icon(Icons.email_outlined),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                TextField(
+                  controller: passwordController,
+                  obscureText: !passwordVisible,
+                  decoration: InputDecoration(
+                    labelText: t('Password', 'Contraseña'),
+                    prefixIcon: const Icon(Icons.lock_outline),
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        passwordVisible
+                            ? Icons.visibility
+                            : Icons.visibility_off,
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          passwordVisible = !passwordVisible;
+                        });
+                      },
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Row(
                   children: [
-                    const Icon(Icons.location_pin,
-                        size: 60, color: Color.fromARGB(255, 16, 15, 16)),
-                    const SizedBox(height: 8),
-                    const Text('GO MAP',
-                        style: TextStyle(
-                            fontSize: 28, fontWeight: FontWeight.bold)),
-                    const SizedBox(height: 24),
-                    const Text('Welcome\nPlease login with your information',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(fontSize: 16)),
-                    const SizedBox(height: 24),
-                    TextField(
-                      controller: emailController,
-                      decoration: const InputDecoration(
-                        labelText: 'Email address',
-                        suffixIcon: Icon(Icons.check),
+                    Checkbox(
+                      value: rememberMe,
+                      onChanged: (value) {
+                        setState(() {
+                          rememberMe = value!;
+                        });
+                      },
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(6),
                       ),
                     ),
-                    const SizedBox(height: 16),
-                    TextField(
-                      controller: passwordController,
-                      obscureText: !passwordVisible,
-                      decoration: InputDecoration(
-                        labelText: 'Password',
-                        suffixIcon: IconButton(
-                          icon: Icon(passwordVisible
-                              ? Icons.visibility
-                              : Icons.visibility_off),
-                          onPressed: () {
-                            setState(() {
-                              passwordVisible = !passwordVisible;
-                            });
-                          },
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Row(
-                          children: [
-                            Checkbox(
-                              value: rememberMe,
-                              onChanged: (value) {
-                                setState(() {
-                                  rememberMe = value!;
-                                });
-                              },
+                    Text(t("Remember me", "Recuérdame")),
+                    const Spacer(),
+                    TextButton(
+                      onPressed: () {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(
+                              t(
+                                "Functionality not implemented",
+                                "Funcionalidad no implementada",
+                              ),
                             ),
-                            const Text("Remember me"),
-                          ],
-                        ),
-                        TextButton(
-                          onPressed: () {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                  content: Text("Funcionalidad no implementada")),
-                            );
-                          },
-                          child: const Text("I forgot my password"),
-                        ),
-                      ],
+                          ),
+                        );
+                      },
+                      child: Text(
+                        t("I forgot my password", "Olvidé mi contraseña"),
+                      ),
                     ),
-                    const SizedBox(height: 16),
-                   SizedBox(
-  width: double.infinity,
-  child: ElevatedButton(
-    style: ElevatedButton.styleFrom(
-      backgroundColor: const Color.fromARGB(255, 10, 10, 10),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(25),
-      ),
-      padding: const EdgeInsets.symmetric(vertical: 16),
-    ),
-    onPressed: () {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Ingresaste correctamente')),
-      );
-    },
-    child: const Text(
-      "LOGIN",
-      style: TextStyle(
-        fontSize: 18,
-        fontWeight: FontWeight.bold,
-        color: Colors.white,
-      ),
-    ),
-  ),
-),
- 
-                    const SizedBox(height: 16),
-                    const Text("Or login with"),
-                    const SizedBox(height: 12),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        _socialIcon(Icons.facebook, const Color.fromARGB(255, 8, 9, 9), "Facebook"),
-                        const SizedBox(width: 12),
-                        _socialIcon(Icons.alternate_email, const Color.fromARGB(255, 13, 14, 14), "Twitter"),
-                        const SizedBox(width: 12),
-                        _socialIcon(Icons.code, Colors.black, "GitHub"),
-                      ],
-                    )
                   ],
                 ),
-              ),
+                const SizedBox(height: 16),
+                SizedBox(
+                  width: double.infinity,
+                  child: FilledButton(
+                    style: FilledButton.styleFrom(
+                      backgroundColor: Colors.black,
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    onPressed: () {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(
+                            t(
+                              'Logged in successfully',
+                              'Ingresaste correctamente',
+                            ),
+                          ),
+                        ),
+                      );
+                    },
+                    child: Text(
+                      t("LOGIN", "INGRESAR"),
+                      style: const TextStyle(
+                        fontSize: 17,
+                        fontWeight: FontWeight.w500,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 24),
+                Text(
+                  t("Or login with", "O inicia sesión con"),
+                  style: TextStyle(color: Colors.grey.shade600),
+                ),
+                const SizedBox(height: 16),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    _socialIcon(Icons.facebook, Colors.black, "Facebook"),
+                    const SizedBox(width: 16),
+                    _socialIcon(Icons.alternate_email, Colors.black, "Twitter"),
+                    const SizedBox(width: 16),
+                    _socialIcon(Icons.code, Colors.black, "GitHub"),
+                  ],
+                ),
+                const SizedBox(height: 40),
+              ],
             ),
           ),
         ),
@@ -175,18 +223,20 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  static Widget _socialIcon(IconData icon, Color color, String name) {
-    return CircleAvatar(
-      backgroundColor: color,
-      child: Builder(
-        builder: (context) => IconButton(
-          icon: Icon(icon, color: Colors.white),
-          onPressed: () {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('Iniciaste sesión con $name')),
-            );
-          },
-        ),
+  Widget _socialIcon(IconData icon, Color color, String name) {
+    return InkWell(
+      onTap: () {
+        final text =
+            isSpanish ? 'Iniciaste sesión con $name' : 'Logged in with $name';
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(text)));
+      },
+      borderRadius: BorderRadius.circular(30),
+      child: CircleAvatar(
+        radius: 24,
+        backgroundColor: const Color(0xFFF2F2F7),
+        child: Icon(icon, color: color),
       ),
     );
   }
