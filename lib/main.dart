@@ -44,7 +44,7 @@ class _LoginPageState extends State<LoginPage> {
           gradient: LinearGradient(
             colors: isDark
                 ? [Colors.black87, Colors.black]
-                : [Colors.purple.shade300, Colors.purple.shade700],
+                : [const Color.fromARGB(255, 0, 0, 0), const Color.fromARGB(255, 253, 252, 252)],
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
           ),
@@ -62,7 +62,7 @@ class _LoginPageState extends State<LoginPage> {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     const Icon(Icons.location_pin,
-                        size: 60, color: Colors.purple),
+                        size: 60, color: Color.fromARGB(255, 16, 15, 16)),
                     const SizedBox(height: 8),
                     const Text('GO MAP',
                         style: TextStyle(
